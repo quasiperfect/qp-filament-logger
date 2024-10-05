@@ -6,6 +6,6 @@ class ResourceLogger extends AbstractModelLogger
 {
     protected function getLogName(): string
     {
-        return config('filament-logger.resources.log_name');
+        return __('filament-logger::filament-logger.resource.log.resource.log_name');
     }
 }

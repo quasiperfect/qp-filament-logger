@@ -22,20 +22,20 @@ class NotificationLogger
     {
         $notification = class_basename($event->notification);
 
-        if ($event instanceof NotificationSent) {
-            $description = $notification.' Notification sent';
-        } else {
-            $description = $notification.' Notification failed';
-        }
-        
-        $receipent = $this->getRecipient($event->notifiable, $event->channel);
-        
-        if($receipent) {
-             $description .= ' to '.$receipent;
+        $recipient = $this->getRecipient($event->notifiable, $event->channel);
+        if (!$recipient) {
+            $recipient = __('filament-logger::filament-logger.resource.log.notifications.not_available');
         }
 
+        if ($event instanceof NotificationSent) {
+            $description = __('filament-logger::filament-logger.resource.log.notifications.sent', ['notification' => $notification, 'recipient' => $recipient]);
+        } else {
+            $description = __('filament-logger::filament-logger.resource.log.notifications.failed', ['notification' => $notification, 'recipient' => $recipient]);
+        }
+
+
         app(ActivityLogger::class)
-            ->useLog(config('filament-logger.notifications.log_name'))
+            ->useLog(__('filament-logger::filament-logger.resource.log.notifications.log_name'))
             ->setLogStatus(app(ActivityLogStatus::class))
             ->causedByAnonymous()
             ->event(Str::of(class_basename($event))->headline())

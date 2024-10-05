@@ -17,13 +17,12 @@ class AccessLogger
      */
     public function handle(Login $event)
     {
-        $description = Filament::getUserName($event->user).' logged in';
 
         app(ActivityLogger::class)
-            ->useLog(config('filament-logger.access.log_name'))
+            ->useLog(__('filament-logger::filament-logger.resource.log.access.log_name'))
             ->setLogStatus(app(ActivityLogStatus::class))
             ->withProperties(['ip' => request()->ip(), 'user_agent' => request()->userAgent()])
-            ->event('Login')
-            ->log($description);
+            ->event(__('filament-logger::filament-logger.resource.log.access.event'))
+            ->log(__('filament-logger::filament-logger.resource.log.access.description'), ['user' => Filament::getUserName($event->user)]);
     }
 }

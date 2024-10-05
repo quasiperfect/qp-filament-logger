@@ -17,7 +17,7 @@ abstract class AbstractModelLogger
     protected function getUserName(?Authenticatable $user): string
     {
         if(blank($user) || $user instanceof GenericUser) {
-            return 'Anonymous';
+            return __('filament-logger::filament-logger.resource.label.user.anonymous');
         }
 
         return Filament::getUserName($user);
@@ -63,20 +63,21 @@ abstract class AbstractModelLogger
             $description = $this->getModelName($model).' '.$event;
         }
 
+        $user = '';
         if (auth()->check()) {
-            $description .= ' by '.$this->getUserName(auth()->user());
+            $user = $this->getUserName(auth()->user());
         }
 
         $this->activityLogger()
             ->event($event)
             ->performedOn($model)
             ->withProperties($this->getLoggableAttributes($model, $attributes))
-            ->log($description);
+            ->log(__('filament-logger::filament-logger.resource.log.abstract.description', ['model' => $this->getModelName($model), 'event' => $event, 'user' => $user, 'description' => $description]));
     }
 
     public function created(Model $model)
     {
-        $this->log($model, 'Created', attributes:$model->getAttributes());
+        $this->log($model, __('filament-logger::filament-logger.resource.label.event.created'), attributes:$model->getAttributes());
     }
 
     public function updated(Model $model)
@@ -88,11 +89,11 @@ abstract class AbstractModelLogger
             return;
         }
 
-        $this->log($model, 'Updated', attributes:$changes);
+        $this->log($model, __('filament-logger::filament-logger.resource.label.event.updated'), attributes:$changes);
     }
 
     public function deleted(Model $model)
     {
-        $this->log($model, 'Deleted');
+        $this->log($model, __('filament-logger::filament-logger.resource.label.event.deleted'));
     }
 }
